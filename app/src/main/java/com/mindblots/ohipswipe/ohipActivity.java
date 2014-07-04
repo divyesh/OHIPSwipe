@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 
 import android.text.TextWatcher;
@@ -17,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -29,14 +31,24 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,6 +63,7 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
     TextView errortxt;
     Timer timer;
     ClearTask myTask;
+    private final Handler myHandler = new Handler();
     private static final int[] BUTTON_IDS = {
             R.id.one,
             R.id.two,
@@ -124,6 +137,7 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
             errortxt.setText("Valid Health Card");
         }
     }
+
     private void ReadInput()
     {
         HealthCard hc=new HealthCard();
@@ -153,8 +167,7 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            new HttpAsyncTask().execute("5558888888");
+            new HttpAsyncTask().execute(ot);//("%B6100542599591129^KOKANI/DIVYESHKUMA C     ^1408799119820826JHDIVYE11073001?;6100542599591129=14087990000100000000?+906100542599591129=0000000000000000000000000000000000000000000000000000000000000000000000000000000000000?");
             tokenInfo.setText("Your token number is");
             timer = new Timer();
             myTask = new ClearTask();
@@ -212,44 +225,84 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
             // TODO Auto-generated method stub
             //Toast.makeText(getApplicationContext(), params[0], Toast.LENGTH_LONG).show();
             Log.i("OHIP Entered",params[0]);
-            postData(params[0]);
+            final String json=postData(params[0]);
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        webToken w= null;
+                        try {
+                            w = toToken(json);
+                         ohipActivity.this.tokenNum.setText(w.Token);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                });
+
             Log.i("OHIP SENT",params[0]);
             return null;
         }
 
         protected void onPostExecute(Double result){
 
-            Toast.makeText(getApplicationContext(), "command sent", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Contacting Server", Toast.LENGTH_LONG).show();
         }
 
 
-        public void postData(String valueIWantToSend) {
+        public String  postData(String valueIWantToSend) {
             // Create a new HttpClient and Post Header
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost("http://dymo.herokuapp.com/tokens.json");
-            httppost.setHeader("Accept", "application/json");
-            httppost.setHeader("Content-type", "application/json");
+
             try {
                 // Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-                nameValuePairs.add(new BasicNameValuePair("healthcard", valueIWantToSend));
-                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                JSONObject data = new JSONObject();
+                data.put("healthcard",valueIWantToSend);
+                StringEntity se = new StringEntity(data.toString());
+
+                //sets the post request as the resulting string
+                httppost.setEntity(se);
+                //sets a request header so the page receving the request
+                //will know what to do with it
+                httppost.setHeader("Accept", "application/json");
+                httppost.setHeader("Content-type", "application/json");
 
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
                 Header[] headers = response.getAllHeaders();
                 for (Header header : headers) {
-                    Log.i("OHIP Response", "Key : " + header.getName()
-                            + " ,Value : " + header.getValue());
+                    Log.i("OHIP Response", "Key : " + header.getName()+ " ,Value : " + header.getValue());
                 }
-                Log.i("OHIP Response",response.toString());
-            } catch (ClientProtocolException e) {
-                // TODO Auto-generated catch block
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-            }
-        }
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                String json = reader.readLine();
 
+                return json;
+            } catch (ClientProtocolException e) {
+                Log.i("OHIP Response ERROR",e.toString());
+            } catch (IOException e) {
+                Log.i("OHIP Response ERROR",e.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        public  webToken toToken(String json) throws JSONException {
+
+                JSONObject jo =new JSONObject(json);
+                String id = jo.getString("id");
+                String token = jo.getString("no");
+                String state = jo.getString("state");
+                String hc = jo.getJSONObject("patient").getString("healthnumber");
+
+                if (!state.equals("completed")) {
+                    webToken w = new webToken(id, token, hc, state, "");
+
+                    return w;
+                }
+return null;
+        }
     }
     class ClearTask extends TimerTask {
 
