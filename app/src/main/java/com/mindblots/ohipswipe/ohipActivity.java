@@ -5,8 +5,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
-<<<<<<< HEAD
-=======
+
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,11 +23,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-<<<<<<< HEAD
-=======
+
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
->>>>>>> FETCH_HEAD
+
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
