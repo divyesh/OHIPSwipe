@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -94,17 +95,7 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
         if(ot.length()<10)
         _ohipText.setText(ot+newdigit);
     }
-   /* @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event)
-    {
-        if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                (keyCode == KeyEvent.KEYCODE_ENTER))
-        {
-            ReadInput();
-        }
-        // Returning false allows other listeners to react to the press.
-        return false;
-    }*/
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -138,53 +129,36 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
         HealthCard hc=new HealthCard();
         String ot=_ohipText.getText().toString();
         //ot=ot.replace(" ","");
-        if(ot.length()==10) {
-            String otn= ot.substring(0,4)+" "+ot.substring(4,7)+" "+ot.substring(7,10);
-            _ohipText.setText(otn);
-        }
-        else if(ot.length()>9) {
+       // if(ot.length()==10) {
+            //String otn= ot.substring(0,4)+" "+ot.substring(4,7)+" "+ot.substring(7,10);
+            //_ohipText.setText(otn);
+       // }
+        //if(ot.length()>9)
+        {
 
             try {
+
                 Boolean valid=true;
 
                 if(ot.length()==10)
                 {
                     valid=hc.Validation(ot);
+
                 }else {
                     hc.Read(ot);
                     valid=hc.valid;
                 }
+
                 Error(valid);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // new LongRunningGetIO().execute();
+
+            new HttpAsyncTask().execute("5558888888");
             tokenInfo.setText("Your token number is");
             timer = new Timer();
             myTask = new ClearTask();
             timer.schedule(myTask, 9000);
-        }
-    }
-    public void postData(String hci) {
-        // Create a new HttpClient and Post Header
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("http://dymo.herokuapp.com/tokens");
-
-        try {
-            // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("healthcard", hci));
-
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-            // Execute HTTP Post Request
-            HttpResponse response = httpclient.execute(httppost);
-            InputStream inputStream = response.getEntity().getContent();
-            Toast.makeText(getBaseContext(),inputStream.toString(),Toast.LENGTH_SHORT);
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
         }
     }
 
@@ -231,6 +205,52 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
 
        }
     }
+    private class HttpAsyncTask extends AsyncTask<String, Integer, Double>{
+
+        @Override
+        protected Double doInBackground(String... params) {
+            // TODO Auto-generated method stub
+            //Toast.makeText(getApplicationContext(), params[0], Toast.LENGTH_LONG).show();
+            Log.i("OHIP Entered",params[0]);
+            postData(params[0]);
+            Log.i("OHIP SENT",params[0]);
+            return null;
+        }
+
+        protected void onPostExecute(Double result){
+
+            Toast.makeText(getApplicationContext(), "command sent", Toast.LENGTH_LONG).show();
+        }
+
+
+        public void postData(String valueIWantToSend) {
+            // Create a new HttpClient and Post Header
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost("http://dymo.herokuapp.com/tokens.json");
+            httppost.setHeader("Accept", "application/json");
+            httppost.setHeader("Content-type", "application/json");
+            try {
+                // Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+                nameValuePairs.add(new BasicNameValuePair("healthcard", valueIWantToSend));
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                Header[] headers = response.getAllHeaders();
+                for (Header header : headers) {
+                    Log.i("OHIP Response", "Key : " + header.getName()
+                            + " ,Value : " + header.getValue());
+                }
+                Log.i("OHIP Response",response.toString());
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+            }
+        }
+
+    }
     class ClearTask extends TimerTask {
 
         @Override
@@ -247,48 +267,5 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
                 }});
         }
 
-    }
-    private class LongRunningGetIO extends AsyncTask<Void, Void, String> {
-
-        protected String getASCIIContentFromEntity(HttpEntity entity) throws Exception {
-            InputStream in = entity.getContent();
-            StringBuffer out = new StringBuffer();
-            int n = 1;
-            while (n>0) {
-                byte[] b = new byte[4096];
-                n =  in.read(b);
-                if (n>0) out.append(new String(b, 0, n));
-            }
-            return out.toString();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            // Send Ohip text
-            String ot=_ohipText.getText().toString();
-
-            HttpClient httpClient =new DefaultHttpClient();
-            HttpContext localContext = new BasicHttpContext();
-            HttpPost httpPost = new HttpPost("http://localhost:3000/NewPatient/"+ot);
-            String text = null;
-            try {
-                HttpResponse response = httpClient.execute(httpPost, localContext);
-                HttpEntity entity = response.getEntity();
-                text = getASCIIContentFromEntity(entity);
-            } catch (Exception e) {
-                return e.getLocalizedMessage();
-            }
-            return text;
-        }
-
-        protected void onPostExecute(String results) {
-            if (results!=null) {
-                tokenInfo.setText("Your token number is");
-                String rslt[]=results.split("|");
-                tokenNum.setText(rslt[0]);
-                waittime.setText(waittimetxt+" "+ rslt[1]);
-            }
-        }
     }
 }
