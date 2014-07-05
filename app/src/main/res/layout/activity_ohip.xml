@@ -163,7 +163,7 @@
         android:layout_alignStart="@+id/standard_functions"
         android:layout_below="@+id/infoToken"
         android:gravity="center"
-        android:text="150"
+        android:text=""
         android:textAlignment="center"
         android:textSize="130dp" />
 
