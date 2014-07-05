@@ -7,13 +7,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.util.Log;
 =======
+=======
+>>>>>>> FETCH_HEAD
 
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 
+<<<<<<< HEAD
+>>>>>>> FETCH_HEAD
+=======
 >>>>>>> FETCH_HEAD
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +52,10 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+import java.io.BufferedReader;
+>>>>>>> FETCH_HEAD
 =======
 import java.io.BufferedReader;
 >>>>>>> FETCH_HEAD
@@ -182,6 +192,7 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void postData(String hci) {
         // Create a new HttpClient and Post Header
         HttpClient httpclient = new DefaultHttpClient();
@@ -204,6 +215,8 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
             // TODO Auto-generated catch block
         }
     }
+=======
+>>>>>>> FETCH_HEAD
 =======
 >>>>>>> FETCH_HEAD
 
