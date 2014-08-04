@@ -6,21 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
-<<<<<<< HEAD
-<<<<<<< HEAD
-import android.util.Log;
-=======
-=======
->>>>>>> FETCH_HEAD
 
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 
-<<<<<<< HEAD
->>>>>>> FETCH_HEAD
-=======
->>>>>>> FETCH_HEAD
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,41 +19,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 import java.io.BufferedReader;
->>>>>>> FETCH_HEAD
-=======
-import java.io.BufferedReader;
->>>>>>> FETCH_HEAD
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -191,8 +163,7 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
             timer.schedule(myTask, 9000);
         }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     public void postData(String hci) {
         // Create a new HttpClient and Post Header
         HttpClient httpclient = new DefaultHttpClient();
@@ -215,10 +186,6 @@ public class ohipActivity extends Activity implements View.OnClickListener/*, Vi
             // TODO Auto-generated catch block
         }
     }
-=======
->>>>>>> FETCH_HEAD
-=======
->>>>>>> FETCH_HEAD
 
     @Override
     public void onClick(View v) {
